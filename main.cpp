@@ -63,6 +63,29 @@ struct Manifold {
     float penetration;
 };
 
+bool CirclevsCircle(Manifold* m) {
+    Object* A = m->A;
+    Object* B = m->B;
+
+    Vec2 n = B->pos - A->pos;
+    float r = A->radius + B->radius;
+    float r2 = r * r;
+
+    if (n.LengthSquared() > r2)
+        return false;
+
+    float d = n.Length();
+
+    if (d != 0) {
+        m->penetration = r - d;
+        m->normal = n / d;
+    } else {
+        m->penetration = A->radius;
+        m->normal = Vec2(1, 0);  // arbitrary
+    }
+
+    return true;
+}
 
 
 
