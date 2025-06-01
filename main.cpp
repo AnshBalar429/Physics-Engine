@@ -87,6 +87,37 @@ bool CirclevsCircle(Manifold* m) {
     return true;
 }
 
+bool AABBvsAABB(Manifold* m) {
+    Object* A = m->A;
+    Object* B = m->B;
+    Vec2 n = B->pos - A->pos;
+
+    AABB abox = A->aabb;
+    AABB bbox = B->aabb;
+
+    float a_extent_x = (abox.max.x - abox.min.x) / 2;
+    float b_extent_x = (bbox.max.x - bbox.min.x) / 2;
+    float x_overlap = a_extent_x + b_extent_x - std::abs(n.x);
+
+    if (x_overlap > 0) {
+        float a_extent_y = (abox.max.y - abox.min.y) / 2;
+        float b_extent_y = (bbox.max.y - bbox.min.y) / 2;
+        float y_overlap = a_extent_y + b_extent_y - std::abs(n.y);
+
+        if (y_overlap > 0) {
+            if (x_overlap < y_overlap) {
+                m->normal = (n.x < 0) ? Vec2(-1, 0) : Vec2(1, 0);
+                m->penetration = x_overlap;
+            } else {
+                m->normal = (n.y < 0) ? Vec2(0, -1) : Vec2(0, 1);
+                m->penetration = y_overlap;
+            }
+            return true;
+        }
+    }
+
+    return false;
+}
 
 
 
