@@ -119,5 +119,48 @@ bool AABBvsAABB(Manifold* m) {
     return false;
 }
 
+bool AABBvsCircle(Manifold* m) {
+    Object* A = m->A; // AABB
+    Object* B = m->B; // Circle
+
+    Vec2 n = B->pos - A->pos;
+
+    float x_extent = (A->aabb.max.x - A->aabb.min.x) / 2;
+    float y_extent = (A->aabb.max.y - A->aabb.min.y) / 2;
+
+    Vec2 closest = n;
+    closest.x = Clamp(-x_extent, x_extent, closest.x);
+    closest.y = Clamp(-y_extent, y_extent, closest.y);
+
+    bool inside = false;
+    if (n == closest) {
+        inside = true;
+
+        if (std::abs(n.x) > std::abs(n.y)) {
+            closest.x = (closest.x > 0) ? x_extent : -x_extent;
+        } else {
+            closest.y = (closest.y > 0) ? y_extent : -y_extent;
+        }
+    }
+
+    Vec2 normal = n - closest;
+    float d2 = normal.LengthSquared();
+    float r = B->radius;
+
+    if (d2 > r * r && !inside)
+        return false;
+
+    float d = std::sqrt(d2);
+
+    if (inside) {
+        m->normal = -normal / d;
+        m->penetration = r - d;
+    } else {
+        m->normal = normal / d;
+        m->penetration = r - d;
+    }
+
+    return true;
+}
 
 
