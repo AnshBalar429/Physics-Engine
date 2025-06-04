@@ -163,4 +163,38 @@ bool AABBvsCircle(Manifold* m) {
     return true;
 }
 
+int main() {
+    Object circle1 = { Vec2(0, 0), 5.0f };
+    Object circle2 = { Vec2(6, 0), 5.0f };
+
+    Manifold m1 = { &circle1, &circle2 };
+    if (CirclevsCircle(&m1)) {
+        std::cout << "Circle vs Circle Collision!\n";
+        std::cout << "Normal: (" << m1.normal.x << ", " << m1.normal.y << ")\n";
+        std::cout << "Penetration: " << m1.penetration << "\n";
+    }
+
+    Object box1 = { Vec2(0, 0), 0.0f, { Vec2(-2, -2), Vec2(2, 2) } };
+    Object box2 = { Vec2(3, 0), 0.0f, { Vec2(-2, -2), Vec2(2, 2) } };
+
+    Manifold m2 = { &box1, &box2 };
+    if (AABBvsAABB(&m2)) {
+        std::cout << "AABB vs AABB Collision!\n";
+        std::cout << "Normal: (" << m2.normal.x << ", " << m2.normal.y << ")\n";
+        std::cout << "Penetration: " << m2.penetration << "\n";
+    }
+
+    Object box3 = { Vec2(0, 0), 0.0f, { Vec2(-3, -3), Vec2(3, 3) } };
+    Object circle3 = { Vec2(5, 0), 2.0f };
+
+    Manifold m3 = { &box3, &circle3 };
+    if (AABBvsCircle(&m3)) {
+        std::cout << "AABB vs Circle Collision!\n";
+        std::cout << "Normal: (" << m3.normal.x << ", " << m3.normal.y << ")\n";
+        std::cout << "Penetration: " << m3.penetration << "\n";
+    }
+
+    return 0;
+}
+
 
